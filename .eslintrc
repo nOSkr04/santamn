@@ -1,0 +1,22 @@
+{
+  "rules": {
+    "no-undef": "off",
+    "react/prop-types" : "off",
+    "react/no-unescaped-entities": 0,
+    "no-unused-vars":"error",
+    "no-unused-expressions":"error",
+    "no-unexpected-multiline":"off"
+  },
+  "extends": [
+    "plugin:react/recommended"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true,
+      "modules": true,
+      "experimentalObjectRestSpread": true
+    }
+  }
+}
