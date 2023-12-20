@@ -9,49 +9,40 @@ import {
 } from "reactstrap"
 //Import Breadcrumb
 import Breadcrumbs from "../../components/Common/Breadcrumb"
+import { useForm } from "react-hook-form"
 
-import { LessonsApi } from "api"
 import useSWR from "swr"
 import Spinners from "components/Common/Spinner"
 import TableContainer from "components/Common/TableContainer"
 
 import withRouter from "components/Common/withRouter"
-
+import { Image, Name, ProductType, Quantity, Type } from "./gift-col"
 import { Link } from "react-router-dom"
 import DeleteModal from "components/Common/DeleteModal"
-import { CreatedAt, Description, Duration, Title } from "./lesson-col"
-import { toast } from "react-toastify"
-import { useForm } from "react-hook-form"
-import EditLesson from "components/product/edit-lesson"
-const Lesson = () => {
+import { GiftApi, MediaApi } from "api"
+import ProductEditModal from "components/modals/product-edit-modal"
+
+const Gift = () => {
   //meta title
   document.title = "Захиалга"
 
   const [deleteModal, setDeleteModal] = useState(false)
-  const [modal, setModal] = useState(false)
-  const [deleteProduct, setDeleteProduct] = useState()
+  const [pageIndex] = useState(1)
+  const [loader, setLoader] = useState(false)
   const [selectedFiles, setselectedFiles] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [deleteGift, setDeleteGift] = useState()
+  const [modal, setModal] = useState(false)
   const {
     data: orders,
     isLoading,
     mutate,
-  } = useSWR(
-    `swr.lesson`,
-    async () => {
-      const res = await LessonsApi.getLessons({
-        page: 1,
-        limit: 10000,
-      })
-      return res
-    },
-    {
-      onError: error => {
-        toast(error.response.data.error.message, { type: "error" })
-      },
-    }
-  )
-
+  } = useSWR(`swr.gift`, async () => {
+    const res = await GiftApi.getGifts({
+      page: pageIndex,
+      limit: 1000,
+    })
+    return res
+  })
   const {
     handleSubmit,
     formState: { errors },
@@ -61,25 +52,24 @@ const Lesson = () => {
     reValidateMode: "onChange",
   })
 
+  const toggle = () => setModal(!modal)
+
   const onClickDelete = async () => {
     try {
-      await LessonsApi.deleteLesson(deleteProduct._id)
+      await GiftApi.deleteGift(deleteGift._id)
       setTimeout(() => {
         mutate()
       }, 500)
     } catch (err) {
-      toast(err.response.data.error.message, { type: "error" })
+      toast(err?.response?.data?.error?.message, { type: "error" })
     } finally {
       setDeleteModal(false)
     }
   }
 
-  const handleDeleteOrder = product => {
-    setDeleteProduct(product)
+  const handleDeleteOrder = gift => {
+    setDeleteGift(gift)
     setDeleteModal(true)
-  }
-  const toggle = () => {
-    setModal(!modal)
   }
 
   const handleUserClick = arg => {
@@ -91,37 +81,48 @@ const Lesson = () => {
   const columns = useMemo(
     () => [
       {
-        Header: "Гарчиг",
-        accessor: "title",
+        Header: "Зураг",
+        accessor: "image",
         filterable: true,
         isSort: true,
         Cell: cellProps => {
-          return <Title {...cellProps} />
+          return <Image {...cellProps} />
         },
       },
       {
-        Header: "Тайлбар",
-        accessor: "description",
+        Header: "Нэр",
+        accessor: "name",
         filterable: true,
         isSort: true,
         Cell: cellProps => {
-          return <Description {...cellProps} />
+          return <Name {...cellProps} />
         },
       },
       {
-        Header: "Урт",
-        accessor: "video",
+        Header: "Бүтээгдэхүүн",
+        accessor: "type",
+        filterable: true,
         isSort: true,
         Cell: cellProps => {
-          return <Duration {...cellProps} />
+          return <Type {...cellProps} />
         },
       },
       {
-        Header: "Үүсгэсэн огноо",
-        accessor: "createdAt",
+        Header: "Тоо ширхэг",
+        accessor: "quantity",
+        filterable: true,
         isSort: true,
         Cell: cellProps => {
-          return <CreatedAt {...cellProps} />
+          return <Quantity {...cellProps} />
+        },
+      },
+      {
+        Header: "Бүтээгдэхүүн төрөл",
+        accessor: "productType",
+        filterable: true,
+        isSort: true,
+        Cell: cellProps => {
+          return <ProductType {...cellProps} />
         },
       },
       {
@@ -162,67 +163,64 @@ const Lesson = () => {
     ],
     []
   )
-
   const onSubmit = async data => {
-    setLoading(true)
-    try {
-      if (selectedFiles[0]) {
-        const file = selectedFiles[0]
-        const formData = new FormData()
-        formData.append("file", file)
-        const video = await LessonsApi.postVideo(formData)
-        const createData = {
-          title: data.title,
-          description: data.description,
-          video: video._id,
-          _id: data._id,
-        }
-        await LessonsApi.editLessonVideo(createData)
+    setLoader(true)
+    const image = selectedFiles[0]
+    if (image) {
+      const formData = new FormData()
+      formData.append("file", image)
+      const res = await MediaApi.postImage(formData)
+      const editData = {
+        ...data,
+        image: {
+          url: res.data.url,
+          blurHash: res.data.blurHash,
+        },
+      }
+      try {
+        await GiftApi.editGift(editData)
+        toggle()
+        setselectedFiles([])
+        setTimeout(() => {
+          mutate()
+        }, 500)
+      } catch (err) {
+        toast(err?.response?.data?.error?.message, { type: "error" })
+      } finally {
+        setLoader(false)
+      }
+    } else {
+      try {
+        await GiftApi.editGift(data)
         toggle()
         setTimeout(() => {
           mutate()
         }, 500)
-        toast("Амжилтай өөрчллөө", { type: "success" })
-        reset({
-          title: "",
-          description: "",
-        })
-        setselectedFiles([])
+      } catch (err) {
+        toast(err?.response?.data?.error?.message, { type: "error" })
+      } finally {
+        setLoader(false)
       }
-      await LessonsApi.editLesson(data)
-      toggle()
-      setTimeout(() => {
-        mutate()
-      }, 500)
-      setselectedFiles([])
-    } catch (err) {
-      toast(err.response.data.error.message, { type: "error" })
-    } finally {
-      setLoading(false)
     }
   }
-
   return (
     <React.Fragment>
       <DeleteModal
         show={deleteModal}
         onDeleteClick={onClickDelete}
         onCloseClick={() => setDeleteModal(false)}
-        title={"Хэрэглэгч"}
+        title={"Захиалга"}
       />
       <div className="page-content">
         <Container fluid>
           {/* Render Breadcrumb */}
-          <Breadcrumbs
-            title="Хэрэглэгч "
-            breadcrumbItem="Хэрэглэгч  жагсаалт"
-          />
+          <Breadcrumbs title="Захиалга" breadcrumbItem="Захиалга жагсаалт" />
 
           <Row>
             <Col lg="12">
               <Card>
                 <CardBody>
-                  <h4 className="card-title mb-3">Хичээл</h4>
+                  <h4 className="card-title mb-3">Захиалга</h4>
                   {isLoading ? (
                     <Spinners />
                   ) : (
@@ -236,10 +234,7 @@ const Lesson = () => {
                       paginationDiv="col-sm-12 col-md-7"
                       pagination="pagination justify-content-end pagination-rounded"
                       tableClass="table-hover datatable dt-responsive nowrap dataTable no-footer dtr-inline"
-                      pageCount={orders?.pageCount || 0}
-                      total={orders?.total || 0}
                       isGlobalFilter={true}
-                      iscustomPageSizeOptions={true}
                     />
                   )}
                 </CardBody>
@@ -248,7 +243,7 @@ const Lesson = () => {
           </Row>
         </Container>
       </div>
-      <EditLesson
+      <ProductEditModal
         toggle={toggle}
         modal={modal}
         onSubmit={onSubmit}
@@ -257,10 +252,11 @@ const Lesson = () => {
         errors={errors}
         setselectedFiles={setselectedFiles}
         selectedFiles={selectedFiles}
-        loading={loading}
+        loader={loader}
+        setLoader={setLoader}
       />
     </React.Fragment>
   )
 }
 
-export default withRouter(Lesson)
+export default withRouter(Gift)

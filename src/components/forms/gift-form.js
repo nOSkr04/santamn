@@ -12,11 +12,8 @@ import {
 } from "reactstrap"
 import { Link } from "react-router-dom"
 import Dropzone from "react-dropzone"
-import { CategoryApi } from "api"
-import Select from "react-select"
-import useSWR from "swr"
 
-const ProductForm = memo(
+const GiftForm = memo(
   ({
     handleSubmit,
     onSubmit,
@@ -25,18 +22,7 @@ const ProductForm = memo(
     setselectedFiles,
     selectedFiles,
     reset,
-    toggleCategory,
   }) => {
-    const { data } = useSWR("swr.category", async () => {
-      const res = await CategoryApi.getCategorys()
-      return res
-    })
-
-    const categoryData = data?.data.map(category => ({
-      label: category.name,
-      value: category._id,
-    }))
-
     function handleAcceptedFiles(files) {
       files.map(file =>
         Object.assign(file, {
@@ -129,87 +115,103 @@ const ProductForm = memo(
                   <CardBody>
                     <Row>
                       <Col sm="6">
-                        {/* 1.title */}
+                        {/* 1.name */}
                         <div className="mb-3">
-                          <Label htmlFor="title">Гарчиг</Label>
+                          <Label className="form-label">Нэр</Label>
                           <Controller
-                            rules={{
-                              required: "Гарчиг заавал бөглөнө",
-                            }}
-                            name="title"
+                            rules={{ required: "Нэр заавал бөглөнө" }}
+                            name="name"
                             control={control}
                             render={({ field }) => (
                               <Input
                                 {...field}
                                 type="text"
                                 className={`form-control ${
-                                  errors.title && "border-danger"
+                                  errors.name && "border-danger"
                                 } `}
-                                placeholder="Гарчиг"
+                                placeholder="Нэр"
                               />
                             )}
                           />
-                          {errors.title && (
+
+                          {errors.name && (
                             <p className="text-danger mt-2">
-                              {errors.title.message}
+                              {errors.name.message}
                             </p>
                           )}
                         </div>
+                        {/* 2.type */}
                         <div className="mb-3">
-                          <Label htmlFor="category">category</Label>
-                          <div className="hstack gap-3 ">
-                            <Controller
-                              name="category"
-                              control={control}
-                              rules={{ required: "category заавал сонгоно" }}
-                              render={({ field }) => {
-                                return (
-                                  <Select
-                                    className="form-control me-auto"
-                                    options={categoryData || []}
-                                    {...field}
-                                    placeholder="category"
-                                  />
-                                )
-                              }}
-                            />
-                            <button
-                              type="button"
-                              className="btn btn-primary"
-                              onClick={toggleCategory}
-                            >
-                              Нэмэх
-                            </button>
-                          </div>
-                          {errors.category && (
+                          <Label htmlFor="type">Бүтээгдэхүүн</Label>
+                          <Controller
+                            rules={{ required: "Бүтээгдэхүүн заавал бөглөнө" }}
+                            name="type"
+                            control={control}
+                            render={({ field }) => (
+                              <Input
+                                {...field}
+                                type="text"
+                                className={`form-control ${
+                                  errors.type && "border-danger"
+                                } `}
+                                placeholder="Бүтээгдэхүүн"
+                              />
+                            )}
+                          />
+                          {errors.type && (
                             <p className="text-danger mt-2">
-                              {errors.category.message}
+                              {errors.type.message}
                             </p>
                           )}
                         </div>
                       </Col>
                       <Col sm="6">
-                        {/* 4.description */}
+                        {/* 3.productType */}
                         <div className="mb-3">
-                          <Label htmlFor="description">Тайлбар</Label>
+                          <Label htmlFor="productType">
+                            Бүтээгдэхүүн төрөл
+                          </Label>
                           <Controller
-                            rules={{ required: "Тайлбар заавал бөглөнө" }}
-                            name="description"
+                            name="productType"
+                            control={control}
+                            render={({ field }) => (
+                              <select
+                                id="formrow-InputState"
+                                className="form-control"
+                                {...field}
+                              >
+                                <option>Өндөг</option>
+                                <option>Хөнгөлөлт</option>
+                              </select>
+                            )}
+                          />
+                          {errors.productType && (
+                            <p className="text-danger mt-2">
+                              {errors.productType.message}
+                            </p>
+                          )}
+                        </div>
+                        {/* 4.quantity */}
+                        <div className="mb-3">
+                          <Label htmlFor="quantity">Тоо ширхэг</Label>
+                          <Controller
+                            rules={{ required: "Тоо ширхэг заавал бөглөнө" }}
+                            name="quantity"
                             control={control}
                             render={({ field }) => (
                               <Input
                                 {...field}
                                 type="text"
                                 className={`form-control ${
-                                  errors.description && "border-danger"
+                                  errors.quantity && "border-danger"
                                 } `}
-                                placeholder="Тайлбар"
+                                placeholder="Тоо ширхэг"
                               />
                             )}
                           />
-                          {errors.description && (
+                          {errors.quantity && (
                             <p className="text-danger mt-2">
-                              {errors.description.message}
+                              {errors.quantity.message}
                             </p>
                           )}
                         </div>
@@ -243,6 +245,6 @@ const ProductForm = memo(
   }
 )
 
-ProductForm.displayName = "ProductForm"
+GiftForm.displayName = "GiftForm"
 
-export { ProductForm }
+export { GiftForm }

@@ -18,7 +18,7 @@ import LoginForm from "components/auth/login-form"
 
 const Login = props => {
   //meta title
-  document.title = "Boosters"
+  document.title = "santas"
 
   const dispatch = useDispatch()
 
@@ -51,7 +51,7 @@ const Login = props => {
                     <Col className="col-7">
                       <div className="text-primary p-4">
                         <h5 className="text-primary">Тавтай морил !</h5>
-                        <p>Админ эрхээр нэвтрэх Boosters.</p>
+                        <p>Админ эрхээр нэвтрэх santas.</p>
                       </div>
                     </Col>
                     <Col className="col-5 align-self-end">

@@ -4,8 +4,10 @@ import authHeader from "./auth-token-header"
 const token = `Bearer ${authHeader().Authorization}`
 
 //apply base url for axios
-// const API_URL = "http://localhost:8005"
-const API_URL = "https://boostersback.com"
+// const API_URL = "http://localhost:8002"
+const API_URL = "https://neuronsolution.info"
+
+// const API_URL = "https://santasback.com"
 
 const axiosApi = axios.create({
   baseURL: API_URL,

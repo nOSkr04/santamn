@@ -13,8 +13,8 @@ import Dashboard from "../pages/Dashboard/index"
 
 // Users
 import User from "../pages/User/index"
-import Lesson from "../pages/Lesson/index"
-import AddLesson from "../pages/Lesson/create-lesson"
+import Gift from "pages/Gift"
+import CreateGift from "pages/Gift/create-gift"
 
 const authProtectedRoutes = [
   { path: "/dashboard", component: <Dashboard /> },
@@ -23,10 +23,8 @@ const authProtectedRoutes = [
 
   // //profile
   { path: "/profile", component: <UserProfile /> },
-
-  // lesson
-  { path: "/lesson", component: <Lesson /> },
-  { path: "/add-lesson", component: <AddLesson /> },
+  { path: "/gift", component: <Gift /> },
+  { path: "/add-gift", component: <CreateGift /> },
 
   // this route should be at the end of all other routes
   // eslint-disable-next-line react/display-name

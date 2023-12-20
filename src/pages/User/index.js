@@ -5,13 +5,8 @@ import {
   Col,
   Card,
   CardBody,
-  NavItem,
-  NavLink,
-  TabContent,
-  TabPane,
   UncontrolledTooltip,
 } from "reactstrap"
-import classnames from "classnames"
 //Import Breadcrumb
 import Breadcrumbs from "../../components/Common/Breadcrumb"
 import { useForm } from "react-hook-form"
@@ -24,23 +19,15 @@ import TableContainer from "components/Common/TableContainer"
 import withRouter from "components/Common/withRouter"
 
 import { Link } from "react-router-dom"
-import EditModal from "components/product/edit-modal"
+import EditModal from "components/modals/edit-modal"
 import DeleteModal from "components/Common/DeleteModal"
-import {
-  CreatedAt,
-  Email,
-  IsPayment,
-  Name,
-  PaymentDate,
-  Phone,
-} from "./user-col"
-import PasswordModal from "components/product/password-modal"
+import { CreatedAt, Egg, Phone, Token } from "./user-col"
+import PasswordModal from "components/modals/password-modal"
 import { toast } from "react-toastify"
 const User = () => {
   //meta title
   document.title = "Захиалга"
 
-  const [activeTab, setActiveTab] = useState("All")
   const [deleteModal, setDeleteModal] = useState(false)
   const [modal, setModal] = useState(false)
   const [passwordModal, setPasswordModal] = useState(false)
@@ -51,24 +38,17 @@ const User = () => {
     isLoading,
     mutate,
   } = useSWR(
-    `${activeTab}.swr.user`,
+    `swr.users`,
     async () => {
-      const active =
-        activeTab === "All"
-          ? ""
-          : activeTab === "Payed"
-          ? "&isPayment=true"
-          : "&isPayment=false"
       const res = await UsersApi.getUsers({
         page: 1,
         limit: 10000,
-        activeTab: active,
       })
       return res
     },
     {
       onError: error => {
-        toast(error.response.data.error.message, { type: "error" })
+        toast(error.response?.data?.error.message, { type: "error" })
       },
     }
   )
@@ -81,17 +61,13 @@ const User = () => {
   } = useForm({
     reValidateMode: "onChange",
   })
+
   const {
     handleSubmit: passwordHandleSubmit,
     formState: { errors: passwordError },
     control: passwordControl,
     reset: passwordReset,
   } = useForm()
-  const toggleTab = tab => {
-    if (activeTab !== tab) {
-      setActiveTab(tab)
-    }
-  }
 
   const onClickDelete = async () => {
     try {
@@ -100,7 +76,9 @@ const User = () => {
         mutate()
       }, 500)
     } catch (err) {
-      console.log(err, "err")
+      if (err.response.data) {
+        toast(err.response.data.error.message, { type: "error" })
+      }
     } finally {
       setDeleteModal(false)
     }
@@ -129,15 +107,6 @@ const User = () => {
   const columns = useMemo(
     () => [
       {
-        Header: "Нэр",
-        accessor: "name",
-        filterable: true,
-        isSort: true,
-        Cell: cellProps => {
-          return <Name {...cellProps} />
-        },
-      },
-      {
         Header: "Утас",
         accessor: "phone",
         filterable: true,
@@ -147,21 +116,19 @@ const User = () => {
         },
       },
       {
-        Header: "И-мэйл",
-        accessor: "email",
-        filterable: true,
+        Header: "Өндөг",
+        accessor: "eggCount",
         isSort: true,
         Cell: cellProps => {
-          return <Email {...cellProps} />
+          return <Egg {...cellProps} />
         },
       },
-
       {
-        Header: "Төлбөр төлсөн огноо",
-        accessor: "paymentDate",
+        Header: "Expo Token",
+        accessor: "expoPushToken",
         isSort: true,
         Cell: cellProps => {
-          return <PaymentDate {...cellProps} />
+          return <Token {...cellProps} />
         },
       },
       {
@@ -170,14 +137,6 @@ const User = () => {
         isSort: true,
         Cell: cellProps => {
           return <CreatedAt {...cellProps} />
-        },
-      },
-      {
-        Header: "Төлөв",
-        accessor: "isPayment",
-        isSort: true,
-        Cell: cellProps => {
-          return <IsPayment {...cellProps} />
         },
       },
       {
@@ -240,7 +199,9 @@ const User = () => {
         mutate()
       }, 500)
     } catch (err) {
-      console.log(err, "err")
+      if (err.response.data) {
+        toast(err.response.data.error.message, { type: "error" })
+      }
     }
   }
   const onPassword = async data => {
@@ -253,7 +214,9 @@ const User = () => {
         mutate()
       }, 500)
     } catch (err) {
-      console.log(err, "err")
+      if (err.response.data) {
+        toast(err.response.data.error.message, { type: "error" })
+      }
     }
   }
 
@@ -282,105 +245,21 @@ const User = () => {
                     <Spinners />
                   ) : (
                     <>
-                      <ul
-                        className="nav nav-tabs nav-tabs-custom"
-                        role="tablist"
-                      >
-                        <NavItem>
-                          <NavLink
-                            className={classnames({
-                              active: activeTab === "All",
-                            })}
-                            onClick={() => {
-                              toggleTab("All")
-                            }}
-                          >
-                            Бүгд
-                          </NavLink>
-                        </NavItem>
-                        <NavItem>
-                          <NavLink
-                            className={classnames({
-                              active: activeTab === "Payed",
-                            })}
-                            onClick={() => {
-                              toggleTab("Payed")
-                            }}
-                          >
-                            Төлөгдсөн
-                          </NavLink>
-                        </NavItem>
-                        <NavItem>
-                          <NavLink
-                            className={classnames({
-                              active: activeTab === "UnPayed",
-                            })}
-                            onClick={() => {
-                              toggleTab("UnPayed")
-                            }}
-                          >
-                            Төлөөгүй
-                          </NavLink>
-                        </NavItem>
-                      </ul>
-
-                      <TabContent activeTab={activeTab} className="p-3">
-                        <TabPane tabId="All" id="all-order">
-                          <TableContainer
-                            columns={columns}
-                            data={orders?.data || []}
-                            isAddOptions={false}
-                            customPageSize={10}
-                            isPagination={true}
-                            isShowingPageLength={true}
-                            paginationDiv="col-sm-12 col-md-7"
-                            pagination="pagination justify-content-end pagination-rounded"
-                            tableClass="table-hover datatable dt-responsive nowrap dataTable no-footer dtr-inline"
-                            pageCount={orders?.pageCount || 0}
-                            total={orders?.total || 0}
-                            isGlobalFilter={true}
-                            iscustomPageSizeOptions={true}
-                          />
-                        </TabPane>
-                        <TabPane tabId="Payed" id="Payed">
-                          <div>
-                            <TableContainer
-                              columns={columns}
-                              data={orders?.data || []}
-                              isAddOptions={false}
-                              customPageSize={10}
-                              isPagination={true}
-                              isShowingPageLength={true}
-                              paginationDiv="col-sm-12 col-md-7"
-                              pagination="pagination justify-content-end pagination-rounded"
-                              tableClass="table-hover datatable dt-responsive nowrap dataTable no-footer dtr-inline"
-                              pageCount={orders?.pageCount || 0}
-                              total={orders?.total || 0}
-                              isGlobalFilter={true}
-                              iscustomPageSizeOptions={true}
-                            />
-                          </div>
-                        </TabPane>
-                        <TabPane tabId="UnPayed" id="UnPayed">
-                          <div>
-                            <TableContainer
-                              columns={columns}
-                              data={orders?.data || []}
-                              isAddOptions={false}
-                              customPageSize={10}
-                              isPagination={true}
-                              isShowingPageLength={true}
-                              paginationDiv="col-sm-12 col-md-7"
-                              pagination="pagination justify-content-end pagination-rounded"
-                              tableClass="table-hover datatable dt-responsive nowrap dataTable no-footer dtr-inline"
-                              pageCount={orders?.pageCount || 0}
-                              total={orders?.total || 0}
-                              isGlobalFilter={true}
-                              iscustomPageSizeOptions={true}
-                            />
-                          </div>
-                        </TabPane>
-                      </TabContent>
+                      <TableContainer
+                        columns={columns}
+                        data={orders?.data || []}
+                        isAddOptions={false}
+                        customPageSize={10}
+                        isPagination={true}
+                        isShowingPageLength={true}
+                        paginationDiv="col-sm-12 col-md-7"
+                        pagination="pagination justify-content-end pagination-rounded"
+                        tableClass="table-hover datatable dt-responsive nowrap dataTable no-footer dtr-inline"
+                        pageCount={orders?.pageCount || 0}
+                        total={orders?.total || 0}
+                        isGlobalFilter={true}
+                        iscustomPageSizeOptions={true}
+                      />
                     </>
                   )}
                 </CardBody>

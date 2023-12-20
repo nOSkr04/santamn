@@ -21,8 +21,7 @@ function* loginUser({ payload: { user, history, setError } }) {
 
 function* logoutUser({ payload: { history } }) {
   try {
-    const response = yield call(AuthApi.logout)
-    console.log(response)
+    yield call(AuthApi.logout)
     localStorage.removeItem("authUser")
     history("/login")
   } catch (error) {

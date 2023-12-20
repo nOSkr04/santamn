@@ -28,10 +28,10 @@ const EditModal = ({
           <Row>
             <Col xs={12}>
               <div className="mb-3">
-                <Label className="form-label">Нэр</Label>
+                <Label className="form-label">Утас</Label>
                 <Controller
-                  rules={{ required: "Нэр заавал бөглөнө" }}
-                  name="name"
+                  rules={{ required: "Утас заавал бөглөнө" }}
+                  name="phone"
                   control={control}
                   render={({ field }) => (
                     <Input
@@ -40,35 +40,13 @@ const EditModal = ({
                       className={`form-control ${
                         errors.modelNomer && "border-danger"
                       } `}
-                      placeholder="Нэр"
+                      placeholder="Утас"
                     />
                   )}
                 />
 
-                {errors.name && (
-                  <p className="text-danger mt-2">{errors.name.message}</p>
-                )}
-              </div>
-              <div className="mb-3">
-                <Label className="form-label">И-мэйл</Label>
-                <Controller
-                  rules={{ required: "И-мэйл заавал бөглөнө" }}
-                  name="email"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      type="text"
-                      className={`form-control ${
-                        errors.modelNomer && "border-danger"
-                      } `}
-                      placeholder="И-мэйл"
-                    />
-                  )}
-                />
-
-                {errors.email && (
-                  <p className="text-danger mt-2">{errors.name.message}</p>
+                {errors.phone && (
+                  <p className="text-danger mt-2">{errors.phone.message}</p>
                 )}
               </div>
               <div className="mb-3">
@@ -94,24 +72,25 @@ const EditModal = ({
                 )}
               </div>
               <div className="mb-3">
-                <Label className="form-label">Төлөв</Label>
+                <Label className="form-label">Өндөг</Label>
                 <Controller
-                  name="isPayment"
+                  rules={{ required: "Өндөг заавал бөглөнө" }}
+                  name="eggCount"
                   control={control}
                   render={({ field }) => (
-                    <select
-                      id="formrow-InputState"
-                      className="form-control"
+                    <Input
                       {...field}
-                    >
-                      <option value={true}>Төлсөн</option>
-                      <option value={false}>Төлөөгүй</option>
-                    </select>
+                      type="text"
+                      className={`form-control ${
+                        errors.modelNomer && "border-danger"
+                      } `}
+                      placeholder="Өндөг"
+                    />
                   )}
                 />
 
-                {errors.isPayment && (
-                  <p className="text-danger mt-2">{errors.isPayment.message}</p>
+                {errors.eggCount && (
+                  <p className="text-danger mt-2">{errors.eggCount.message}</p>
                 )}
               </div>
             </Col>

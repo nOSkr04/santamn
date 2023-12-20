@@ -1,7 +1,7 @@
 import React from "react"
-import { Modal, ModalBody, Spinner } from "reactstrap"
+import { Modal, ModalBody, Progress, Spinner } from "reactstrap"
 import Typewriter from "typewriter-effect"
-const LoaderModal = ({ modal, setModal }) => {
+const LoaderModal = ({ modal, setModal, progressBar }) => {
   return (
     <Modal isOpen={modal} onClosed={setModal} centered={true}>
       <ModalBody className="d-flex align-items-center justify-content-center mt-5">
@@ -14,6 +14,17 @@ const LoaderModal = ({ modal, setModal }) => {
           type="grow"
         />
       </ModalBody>
+      {progressBar && (
+        <Progress
+          animated
+          color="success"
+          striped
+          value={progressBar}
+          className="my-2"
+        >
+          {progressBar}%
+        </Progress>
+      )}
       <div className="d-flex align-items-center justify-content-center mb-5 mt-3">
         <h1>
           <Typewriter

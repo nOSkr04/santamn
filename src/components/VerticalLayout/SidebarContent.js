@@ -170,14 +170,14 @@ const SidebarContent = () => {
             <li>
               <Link to="/#" className="has-arrow">
                 <i className="bx bx-play"></i>
-                <span>Хичээл</span>
+                <span>Бүтээгдэхүүн</span>
               </Link>
               <ul className="sub-menu">
                 <li>
-                  <Link to="/lesson">Хичээлүүд</Link>
+                  <Link to="/gift">Бүтээгдэхүүнүүд</Link>
                 </li>
                 <li>
-                  <Link to="/add-lesson">Хичээл нэмэх</Link>
+                  <Link to="/add-gift">Бүтээгдэхүүн нэмэх</Link>
                 </li>
               </ul>
             </li>

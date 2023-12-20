@@ -1,6 +1,6 @@
 import * as AuthApi from "./auth"
 import * as UsersApi from "./users"
-import * as LessonsApi from "./lesson"
-import * as CategoryApi from "./category"
+import * as GiftApi from "./gift"
+import * as MediaApi from "./media"
 
-export { AuthApi, UsersApi, LessonsApi, CategoryApi }
+export { AuthApi, UsersApi, GiftApi, MediaApi }

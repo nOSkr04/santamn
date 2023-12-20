@@ -1,9 +1,7 @@
 import { del, get, post, put } from "helpers/api_helper"
 
-export const getUsers = async ({ page, limit, activeTab }) => {
-  const res = await get(
-    `/users?page=${page}&limit=${limit}&sort=-createdAt${activeTab}`
-  )
+export const getUsers = async ({ page, limit }) => {
+  const res = await get(`/users?page=${page}&limit=${limit}&sort=-createdAt`)
   return res
 }
 
@@ -23,7 +21,6 @@ export const getDashboard = async () => {
 }
 
 export const editPassword = async ({ data, id }) => {
-  console.log(data)
   const res = post(`/users/update-password/${id}`, data)
   return res
 }
