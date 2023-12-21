@@ -15,6 +15,7 @@ import Dashboard from "../pages/Dashboard/index"
 import User from "../pages/User/index"
 import Gift from "pages/Gift"
 import CreateGift from "pages/Gift/create-gift"
+import Privacy from "pages/privacy"
 
 const authProtectedRoutes = [
   { path: "/dashboard", component: <Dashboard /> },
@@ -38,6 +39,7 @@ const authProtectedRoutes = [
 const publicRoutes = [
   { path: "/login", component: <Login /> },
   { path: "/logout", component: <Logout /> },
+  { path: "/privacy", component: <Privacy /> },
 ]
 
 export { authProtectedRoutes, publicRoutes }
